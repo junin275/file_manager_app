@@ -37,7 +37,9 @@ android {
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("release")
+            if (project.rootProject.file("key.properties").exists()) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
 }
