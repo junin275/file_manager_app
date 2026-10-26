@@ -4,7 +4,7 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
         maven {
-            url = uri("${System.getenv('FLUTTER_ROOT')}/packages/flutter_tools/gradle")
+            url = uri("${System.getenv(\"FLUTTER_ROOT\")}/packages/flutter_tools/gradle")
         }
     }
     plugins {
