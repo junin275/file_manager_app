@@ -1,6 +1,5 @@
 plugins {
     id("com.android.application")
-    id("dev.flutter.flutter-gradle-plugin")
     id("org.jetbrains.kotlin.android")
 }
 
@@ -34,6 +33,9 @@ kotlin {
         jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
     }
 }
+
+// Apply Flutter Gradle plugin from Flutter SDK
+apply(from = "${flutter.sdk}/packages/flutter_tools/gradle/flutter.gradle")
 
 flutter {
     source = ".."
