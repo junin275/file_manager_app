@@ -1,0 +1,39 @@
+# Flutter/Dart
+.dart_tool/
+.packages
+build/
+*.dart_tool/
+.pub-cache/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build outputs
+*.apk
+*.aab
+*.ipa
+*.dSYM/
+build/
+android/.gradle/
+android/app/build/
+
+# Keys/Secrets
+*.jks
+*.keystore
+key.properties
+*.pem
+*.p12
+
+# Logs
+*.log
+
+# Local config
+local.properties
