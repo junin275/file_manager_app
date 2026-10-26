@@ -29,6 +29,27 @@ jobs:
           flutter-version: '3.24.3'
           cache: true
 
+      - name: Backup our Dart code and config
+        run: |
+          mkdir -p /tmp/backup
+          cp -r lib /tmp/backup/
+          cp pubspec.yaml /tmp/backup/
+          cp analysis_options.yaml /tmp/backup/ 2>/dev/null || true
+
+      - name: Create fresh Flutter project structure
+        run: |
+          cd /tmp
+          flutter create -t app --overwrite --platforms=android --project-name=file_manager_app --org=com.example fresh_project
+          rm -rf android lib pubspec.yaml analysis_options.yaml test
+          cp -r fresh_project/* .
+          rm -rf fresh_project
+          
+      - name: Restore our Dart code and config
+        run: |
+          cp -r /tmp/backup/lib/* lib/
+          cp /tmp/backup/pubspec.yaml pubspec.yaml
+          cp /tmp/backup/analysis_options.yaml analysis_options.yaml 2>/dev/null || true
+
       - name: Accept Android licenses
         run: |
           mkdir -p "$ANDROID_HOME/licenses"
@@ -36,7 +57,7 @@ jobs:
           echo "ALLOWED" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
           yes | flutter doctor --android-licenses || true
 
-      - name: Install dependencies
+      - name: Get dependencies
         run: flutter pub get
 
       - name: Build APK (release)
@@ -58,14 +79,6 @@ jobs:
           path: build/app/outputs/flutter-apk/app-release.apk
           retention-days: 30
 
-      - name: Create Release
-        if: github.event_name == 'release'
-        uses: softprops/action-gh-release@v1
-        with:
-          files: build/app/outputs/flutter-apk/app-release.apk
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Upload build log
         if: always()
         uses: actions/upload-artifact@v4
@@ -73,5 +86,4 @@ jobs:
           name: build-log
           path: |
             gradle_build.log
-            flutter_build.log
           retention-days: 7
