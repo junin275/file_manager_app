@@ -26,39 +26,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
-          flutter-version: '3.24.3'
-          cache: true
-
-      - name: Regenerate Android project structure
-        run: |
-          # Backup our Dart code
-          mkdir -p /tmp/backup
-          cp -r lib /tmp/backup/
-          cp pubspec.yaml /tmp/backup/
-          cp analysis_options.yaml /tmp/backup/ 2>/dev/null || true
-
-      - name: Regenerate Android project structure
-        run: |
-          flutter create -t app --overwrite --platforms=android --project-name=file_manager_app --org=com.example .
-          # The above command regenerates the entire project structure including Android
-
-      - name: Restore our Dart code
-        run: |
-          cp -r /tmp/backup/lib/* lib/
-          cp /tmp/backup/pubspec.yaml pubspec.yaml
-          cp /tmp/backup/analysis_options.yaml analysis_options.yaml 2>/dev/null || true
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          flutter-version: '3.24.3'
+          flutter-version: '3.19.6'
           cache: true
 
       - name: Get dependencies
