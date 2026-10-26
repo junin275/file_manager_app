@@ -4,16 +4,34 @@ workflows:
     max_build_duration: 30
     environment:
       flutter: stable
-      xcode: latest
-      cocoapods: default
     scripts:
+      - name: Backup our Dart code
+        script: |
+          mkdir -p /tmp/backup
+          cp -r lib /tmp/backup/
+          cp pubspec.yaml /tmp/backup/
+          cp analysis_options.yaml /tmp/backup/ 2>/dev/null || true
+
+      - name: Create fresh Flutter project and copy Android structure
+        script: |
+          cd /tmp
+          flutter create -t app --overwrite --platforms=android --project-name=file_manager_app --org=com.example fresh_project
+          # Copy the ENTIRE project structure
+          rm -rf android lib pubspec.yaml analysis_options.yaml test
+          cp -r fresh_project/* .
+          rm -rf fresh_project
+          
+      - name: Restore our Dart code
+        script: |
+          cp -r /tmp/backup/lib/* lib/
+          cp /tmp/backup/pubspec.yaml pubspec.yaml
+          cp /tmp/backup/analysis_options.yaml analysis_options.yaml 2>/dev/null || true
+
       - name: Get dependencies
         script: flutter pub get
+
       - name: Build APK
         script: flutter build apk --release
+
     artifacts:
       - build/app/outputs/flutter-apk/app-release.apk
-    publishing:
-      email:
-        recipients:
-          - seu@email.com
