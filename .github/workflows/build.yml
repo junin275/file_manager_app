@@ -28,11 +28,12 @@ jobs:
           cp -r android/settings.gradle.kts /tmp/backup/ 2>/dev/null || true
           cp -r android/build.gradle.kts /tmp/backup/ 2>/dev/null || true
 
-      - name: Create fresh Flutter project in /tmp and copy EVERYTHING
+      - name: Create fresh FULL Flutter app project in /tmp and copy EVERYTHING
         run: |
           cd /tmp
-          flutter create --platforms=android --project-name=file_manager_app --org=com.example fresh_project
-          # Copy the ENTIRE project structure
+          # Use -t app to create a FULL app project (not just platform)
+          flutter create -t app --overwrite --project-name=file_manager_app --org=com.example fresh_project
+          # Copy the ENTIRE project structure (including proper Flutter Gradle setup)
           rm -rf android lib pubspec.yaml analysis_options.yaml test
           cp -r fresh_project/* .
           # Clean up temp
