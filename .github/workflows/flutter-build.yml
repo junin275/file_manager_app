@@ -33,17 +33,6 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
-      - name: Configure release signing
-        run: |
-          mkdir -p android
-          echo "${{ secrets.RELEASE_STORE_FILE }}" | base64 -d > android/upload-keystore.jks
-          cat > android/key.properties <<EOF
-          storeFile=upload-keystore.jks
-          storePassword=${{ secrets.RELEASE_STORE_PASSWORD }}
-          keyAlias=${{ secrets.RELEASE_KEY_ALIAS }}
-          keyPassword=${{ secrets.RELEASE_KEY_PASSWORD }}
-          EOF
-
       - name: Build APK (release)
         run: |
           flutter build apk --release --verbose > gradle_build.log 2>&1 || {
