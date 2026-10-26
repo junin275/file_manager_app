@@ -1,21 +1,14 @@
-name: Build Flutter APK
+name: Build APK
 
 on:
+  workflow_dispatch:
   push:
     branches: [main, master]
-  workflow_dispatch:
-  release:
-    types: [published]
-
-permissions:
-  contents: write
 
 jobs:
-  build:
-    name: Build Flutter APK
+  build-android:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-
+    timeout-minutes: 90
     permissions:
       contents: write
 
@@ -23,17 +16,40 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.3'
           channel: stable
+          flutter-version: '3.24.3'
+          cache: true
 
-      - name: Get dependencies
+      - name: Accept Android licenses
+        run: |
+          mkdir -p "$ANDROID_HOME/licenses"
+          echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" > "$ANDROID_HOME/licenses/android-sdk-license"
+          echo "ALLOWED" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
+          yes | flutter doctor --android-licenses || true
+
+      - name: Install dependencies
         run: flutter pub get
 
       - name: Build APK (release)
-        run: flutter build apk --release
+        run: |
+          flutter build apk --release --verbose > gradle_build.log 2>&1 || {
+            echo "=== BUILD FAILED - last 150 lines of gradle log ===";
+            tail -150 gradle_build.log;
+            echo "=== APK output dir ===";
+            find build -name "*.apk" 2>/dev/null || true;
+            exit 1;
+          }
+          echo "=== Build OK, APKs: ==="
+          find build -name "*.apk" 2>/dev/null || true
 
       - name: Upload Release APK
         uses: actions/upload-artifact@v4
@@ -49,3 +65,13 @@ jobs:
           files: build/app/outputs/flutter-apk/app-release.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: |
+            gradle_build.log
+            flutter_build.log
+          retention-days: 7
