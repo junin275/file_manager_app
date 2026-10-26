@@ -18,7 +18,36 @@ jobs:
           flutter-version: '3.47.8'
           channel: stable
 
-      - name: Get dependencies
+      - name: Backup our Dart code and config
+        run: |
+          mkdir -p /tmp/backup
+          cp -r lib /tmp/backup/
+          cp pubspec.yaml /tmp/backup/
+          cp -r android/app/src/main/AndroidManifest.xml /tmp/backup/ 2>/dev/null || true
+          cp -r android/app/build.gradle.kts /tmp/backup/ 2>/dev/null || true
+          cp -r android/settings.gradle.kts /tmp/backup/ 2>/dev/null || true
+          cp -r android/build.gradle.kts /tmp/backup/ 2>/dev/null || true
+
+      - name: Create fresh Flutter project in /tmp and copy EVERYTHING
+        run: |
+          cd /tmp
+          flutter create -t app --overwrite --platforms=android --project-name=file_manager_app --org=com.example fresh_project
+          # Copy the ENTIRE project structure
+          rm -rf android lib pubspec.yaml analysis_options.yaml test
+          cp -r fresh_project/* .
+          # Clean up temp
+          rm -rf fresh_project
+          
+      - name: Restore our Dart code and config
+        run: |
+          cp -r /tmp/backup/lib/* lib/
+          cp /tmp/backup/pubspec.yaml pubspec.yaml
+          cp /tmp/backup/AndroidManifest.xml android/app/src/main/AndroidManifest.xml 2>/dev/null || true
+          cp /tmp/backup/build.gradle.kts android/app/build.gradle.kts 2>/dev/null || true
+          cp /tmp/backup/settings.gradle.kts android/settings.gradle.kts 2>/dev/null || true
+          cp /tmp/backup/build.gradle.kts android/build.gradle.kts 2>/dev/null || true
+
+      - name: Get dependencies (after regenerate)
         run: flutter pub get
 
       - name: Build APK (debug)
