@@ -16,6 +16,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Ver arquitetura
+        run: |
+          echo "=== ARQUITETURA DO RUNNER ==="
+          uname -m
+          dpkg --print-architecture
+          echo "================================"
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -28,13 +38,6 @@ jobs:
           channel: stable
           flutter-version: '3.24.3'
           cache: true
-
-      - name: Accept Android licenses
-        run: |
-          mkdir -p "$ANDROID_HOME/licenses"
-          echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" > "$ANDROID_HOME/licenses/android-sdk-license"
-          echo "ALLOWED" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
-          yes | flutter doctor --android-licenses || true
 
       - name: Get dependencies
         run: flutter pub get
