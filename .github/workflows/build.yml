@@ -27,8 +27,9 @@ jobs:
           cp -r android/app/build.gradle.kts /tmp/backup/ 2>/dev/null || true
           cp -r android/settings.gradle.kts /tmp/backup/ 2>/dev/null || true
           cp -r android/build.gradle.kts /tmp/backup/ 2>/dev/null || true
+          cp analysis_options.yaml /tmp/backup/ 2>/dev/null || true
 
-      - name: Create fresh Flutter project in /tmp and copy EVERYTHING
+      - name: Create fresh FULL Flutter app project in /tmp and copy EVERYTHING
         run: |
           cd /tmp
           flutter create -t app --overwrite --platforms=android --project-name=file_manager_app --org=com.example fresh_project
@@ -46,6 +47,7 @@ jobs:
           cp /tmp/backup/build.gradle.kts android/app/build.gradle.kts 2>/dev/null || true
           cp /tmp/backup/settings.gradle.kts android/settings.gradle.kts 2>/dev/null || true
           cp /tmp/backup/build.gradle.kts android/build.gradle.kts 2>/dev/null || true
+          cp /tmp/backup/analysis_options.yaml analysis_options.yaml 2>/dev/null || true
 
       - name: Get dependencies (after regenerate)
         run: flutter pub get
